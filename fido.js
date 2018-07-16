@@ -89,7 +89,6 @@ fido.makeCredential = async (attestation) => {
     //Store the credential
     var credential = await storage.Credentials.create({
         id: authenticatorData.attestedCredentialData.credentialId.toString('base64'),
-        userName: attestation.metadata.userName,
         publicKeyJwk: authenticatorData.attestedCredentialData.publicKeyJwk,
         signCount: authenticatorData.signCount
     });

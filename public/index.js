@@ -50,7 +50,7 @@ function registerButtonClicked() {
     $("#registerSpinner").removeClass("hidden");
 
     getChallenge().then(challenge => {
-        return makeCredential(challenge);
+        return createCredential(challenge);
     }).then(credential => {
         localStorage.setItem("credentialId", credential.id);
         $("#status").text("Successfully created credential with ID: " + credential.id);
@@ -106,57 +106,60 @@ function getChallenge() {
  * @param {ArrayBuffer} challenge challenge to use
  * @return {any} server response object
  */
-function makeCredential(challenge) {
+function createCredential(challenge) {
     if (!PublicKeyCredential || typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable !== "function")
         return Promise.reject("WebAuthn APIs are not available on this user agent.");
 
     var attachment = $("input[name='attachment']:checked").val();
 
-    var makeCredentialOptions = {
+    var createCredentialOptions = {
         rp: {
-            name: "rp.name",
-            icon: "https://example.com/icon.png"
+            name: "WebAuthn Sample App",
+            icon: "https://example.com/rpIcon.png"
         },
         user: {
-            id: stringToArrayBuffer("user.id"),
-            name: "user.name",
-            displayName: "user.displayName",
-            icon: "user.icon"
+            id: stringToArrayBuffer("some.user.id"),
+            name: "bob.smith@contoso.com",
+            displayName: "Bob Smith",
+            icon: "https://example.com/userIcon.png"
         },
-        //Support both ES256 and RS256 (for Hello)
         pubKeyCredParams: [
             {
+                //External authenticators support the ES256 algorithm
                 type: "public-key",
                 alg: -7                 
             }, 
             {
+                //Windows Hello supports the RS256 algorithm
                 type: "public-key",
                 alg: -257
             }
         ],
         authenticatorSelection: {
+            //Select authenticators that support username-less flows
             requireResidentKey: true,
+            //Select authenticators that have a second factor (e.g. PIN, Bio)
             userVerification: "required",
+            //Selects between bound or detachable authenticators
             authenticatorAttachment: attachment
         },
-        timeout: 30000,
+        //Since Edge shows UI, it is better to select larger timeout values
+        timeout: 50000,
+        //an opaque challenge that the authenticator signs over
         challenge: challenge,
+        //prevent re-registration by specifying existing credentials here
         excludeCredentials: [],
+        //specifies whether you need an attestation statement
         attestation: "none"
     };
 
     return navigator.credentials.create({
-        publicKey: makeCredentialOptions
+        publicKey: createCredentialOptions
     }).then(attestation => {
         var credential = {
             id: base64encode(attestation.rawId),
             clientDataJSON: arrayBufferToString(attestation.response.clientDataJSON),
-            attestationObject: base64encode(attestation.response.attestationObject),
-            metadata: {
-                rpId: makeCredentialOptions.rp.id,
-                userName: makeCredentialOptions.user.name,
-                requireResidentKey: makeCredentialOptions.authenticatorSelection.requireResidentKey
-            },
+            attestationObject: base64encode(attestation.response.attestationObject)
         };
 
         console.log("=== Attestation response ===");
@@ -199,8 +202,12 @@ function getAssertion(challenge) {
     }
 
     var getAssertionOptions = {
+        //specifies which credential IDs are allowed to authenticate the user
+        //if empty, any credential can authenticate the users
         allowCredentials: allowCredentials,
+        //an opaque challenge that the authenticator signs over
         challenge: challenge,
+        //Since Edge shows UI, it is better to select larger timeout values
         timeout: 50000
     };
 

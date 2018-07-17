@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Ibrahim Damlaj <idamlaj@gmail.com> (https://github.com/idamlaj)",
+  "author": "Ibrahim Damlaj <idamlaj@gmail.com> (https://github.com/MicrosoftEdge/webauthnsample)",
   "license": "MIT",
   "dependencies": {
     "base64url": "^3.0.0",

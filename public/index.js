@@ -155,19 +155,19 @@ function createCredential(challenge) {
 
     return navigator.credentials.create({
         publicKey: createCredentialOptions
-    }).then(attestation => {
-        var credential = {
-            id: base64encode(attestation.rawId),
-            clientDataJSON: arrayBufferToString(attestation.response.clientDataJSON),
-            attestationObject: base64encode(attestation.response.attestationObject)
+    }).then(rawAttestation => {
+        var attestation = {
+            id: base64encode(rawAttestation.rawId),
+            clientDataJSON: arrayBufferToString(rawAttestation.response.clientDataJSON),
+            attestationObject: base64encode(rawAttestation.response.attestationObject)
         };
 
         console.log("=== Attestation response ===");
-        logVariable("id (base64)", credential.id);
-        logVariable("clientDataJSON", credential.clientDataJSON);
-        logVariable("attestationObject (base64)", credential.attestationObject);
+        logVariable("id (base64)", attestation.id);
+        logVariable("clientDataJSON", attestation.clientDataJSON);
+        logVariable("attestationObject (base64)", attestation.attestationObject);
 
-        return rest_put("/credentials", credential);
+        return rest_put("/credentials", attestation);
     }).then(response => {
         if (response.error) {
             return Promise.reject(response.error);
@@ -213,23 +213,23 @@ function getAssertion(challenge) {
 
     return navigator.credentials.get({
         publicKey: getAssertionOptions
-    }).then(assertion => {
-        var credential = {
-            id: base64encode(assertion.rawId),
-            clientDataJSON: arrayBufferToString(assertion.response.clientDataJSON),
-            userHandle: base64encode(assertion.response.userHandle),
-            signature: base64encode(assertion.response.signature),
-            authenticatorData: base64encode(assertion.response.authenticatorData)
+    }).then(rawAssertion => {
+        var assertion = {
+            id: base64encode(rawAssertion.rawId),
+            clientDataJSON: arrayBufferToString(rawAssertion.response.clientDataJSON),
+            userHandle: base64encode(rawAssertion.response.userHandle),
+            signature: base64encode(rawAssertion.response.signature),
+            authenticatorData: base64encode(rawAssertion.response.authenticatorData)
         };
 
         console.log("=== Assertion response ===");
-        logVariable("id (base64)", credential.id);
-        logVariable("userHandle (base64)", credential.userHandle);
-        logVariable("authenticatorData (base64)", credential.authenticatorData);
-        logVariable("clientDataJSON", credential.clientDataJSON);
-        logVariable("signature (base64)", credential.signature);
+        logVariable("id (base64)", assertion.id);
+        logVariable("userHandle (base64)", assertion.userHandle);
+        logVariable("authenticatorData (base64)", assertion.authenticatorData);
+        logVariable("clientDataJSON", assertion.clientDataJSON);
+        logVariable("signature (base64)", assertion.signature);
 
-        return rest_put("/assertion", credential);
+        return rest_put("/assertion", assertion);
     }).then(response => {
         if (response.error) {
             return Promise.reject(response.error);

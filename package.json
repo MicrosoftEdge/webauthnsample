@@ -4,7 +4,8 @@
   "description": "WebAuthn Sample App",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "author": "Ibrahim Damlaj <idamlaj@gmail.com> (https://github.com/MicrosoftEdge/webauthnsample)",
   "license": "MIT",

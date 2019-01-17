@@ -1,8 +1,8 @@
-var express = require("express");
-var app = express();
-var fido = require('./fido.js');
-var bodyParser = require('body-parser');
-var enforce = require('express-sslify');
+const express = require("express");
+const app = express();
+const fido = require('./fido.js');
+const bodyParser = require('body-parser');
+const enforce = require('express-sslify');
 
 if (process.env.ENFORCE_SSL_HEROKU === "true") {
     app.use(enforce.HTTPS({ trustProtoHeader: true }));
@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/challenge', async (req, res) => {
     try {
-        var challenge = await fido.getChallenge();
+        const challenge = await fido.getChallenge();
         res.json({
             result: challenge
         });
@@ -29,7 +29,7 @@ app.get('/challenge', async (req, res) => {
 
 app.put('/credentials', async (req, res) => {
     try {
-        var credential = await fido.makeCredential(req.body);
+        const credential = await fido.makeCredential(req.body);
         res.json({
             result: credential
         });
@@ -42,7 +42,7 @@ app.put('/credentials', async (req, res) => {
 
 app.put('/assertion', async (req, res) => {
     try {
-        var credential = await fido.verifyAssertion(req.body);
+        const credential = await fido.verifyAssertion(req.body);
         res.json({
             result: credential
         });
